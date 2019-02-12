@@ -93,6 +93,9 @@ class BookInstance(models.Model):
         if self.due_back and date.today() > self.due_back:
             return True
         return False
+    class Meta:
+        ordering = ['due_back']
+        permissions = (("can_mark_returned", "Set book as returned"),)
 
 class Author(models.Model):
     """Model representing an author."""
