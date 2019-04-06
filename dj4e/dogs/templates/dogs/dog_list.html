@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Dog List</h1>
+  {% if dog_list %}
+  <ul>
+    {% for dog in dog_list %}
+      <li>
+          {{ dog.nickname }} ({{ dog.type }})
+          (<a href="{% url 'dog_update' dog.id %}">Update</a> |
+          <a href="{% url 'dog_delete' dog.id %}">Delete</a>) <br/>
+          {{ dog.foods }} ({{ dog.weight }} pounds)
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no dogs in the library.</p>
+  {% endif %}
+  <p>
+    {% if type_count > 0 %}
+      <a href="{% url 'dog_create' %}">Add a dog</a>
+    {% else %}
+      Please add a type before you add a dog.
+    {% endif %}
+  </p>
+  <p>
+  <a href="{% url 'type_list' %}">View types</a> ({{ type_count }}) |
+    <a href="{% url 'type_create' %}">Add a type</a>
+  </p>
+{% endblock %}

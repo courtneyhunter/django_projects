@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
+    'autos.apps.AutosConfig',
+    'cats.apps.CatsConfig',
+    'dogs.apps.DogsConfig',
+    'athletes.apps.AthletesConfig',
+    'wizards.apps.WizardsConfig',
+    'unesco.apps.UnescoConfig'
 ]
 
 MIDDLEWARE = [

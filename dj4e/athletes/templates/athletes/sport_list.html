@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Sport List</h1>
+  {% if sport_list %}
+  <ul>
+    {% for sport in sport_list %}
+      <li>
+          {{ sport.name }}
+         (<a href="{% url 'sport_update' sport.id %}">Update</a> |
+          <a href="{% url 'sport_delete' sport.id %}">Delete</a>)
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no sports in the library.</p>
+  {% endif %}
+  <p><a href="{% url 'sport_create' %}">Add a sport</a></p>
+  <p>
+    <a href="{% url 'athletes' %}">Back to athletes</a>
+  </p>
+{% endblock %}

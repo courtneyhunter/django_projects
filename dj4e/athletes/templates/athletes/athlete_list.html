@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Athlete List</h1>
+  {% if athlete_list %}
+  <ul>
+    {% for athlete in athlete_list %}
+      <li>
+          {{ athlete.nickname }} ({{ athlete.sport }})
+          (<a href="{% url 'athlete_update' athlete.id %}">Update</a> |
+          <a href="{% url 'athlete_delete' athlete.id %}">Delete</a>) <br/>
+          {{ athlete.comments }} ({{ athlete.age }} years)
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no athletes in the library.</p>
+  {% endif %}
+  <p>
+    {% if sport_count > 0 %}
+      <a href="{% url 'athlete_create' %}">Add an athlete</a>
+    {% else %}
+      Please add a sport before you add an athlete.
+    {% endif %}
+  </p>
+  <p>
+  <a href="{% url 'sport_list' %}">View sports</a> ({{ sport_count }}) |
+    <a href="{% url 'sport_create' %}">Add a sport</a>
+  </p>
+{% endblock %}
