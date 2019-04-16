@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends "base_menu.html" %}
 {% load crispy_forms_tags %}
 {% load humanize %} <!-- https://docs.djangoproject.com/en/2.1/ref/contrib/humanize -->
 {% block content %}
@@ -30,14 +30,9 @@
 {% for comment in comments %}
 <p> {{ comment.text }}
 ({{ comment.updated_at|naturaltime }})
-{% if user == comment.owner %}
+{% if user == comment.ads %}
 <a href="{% url 'comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
 {% endif %}
+</p>
 {% endfor %}
-</p>
-<p>
-</p>
-<p>
-<a href="{% url 'ads' %}">All ads</a>
-</p>
 {% endblock %}

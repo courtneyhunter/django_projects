@@ -1,32 +1,27 @@
 # Create your views here.
-from ads.models import Ad
-
-from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.http import HttpResponse
-
-from django.core.files.uploadedfile import InMemoryUploadedFile
-
-from ads.util import AdListView, AdDetailView, AdCreateView, AdUpdateView, AdDeleteView
-
 from ads.models import Ad, Comment
+from django.views import View
+from django.views import generic
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from ads.util import OwnerListView, OwnerDetailView, OwnerCreateView, OwnerUpdateView, OwnerDeleteView
+from django.http import HttpResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from ads.forms import CreateForm, CommentForm
 
-class AdListView(AdListView):
+class AdListView(OwnerListView):
     model = Ad
     template_name = "ad_list.html"
 
-class AdDetailView(AdDetailView):
+class AdDetailView(OwnerDetailView):
     model = Ad
     template_name = "ad_detail.html"
     def get(self, request, pk) :
-        forum = Ad.objects.get(id=pk)
-        comments = Comment.objects.filter(forum=forum).order_by('-updated_at')
+        ad = Ad.objects.get(id=pk)
+        comments = Comment.objects.filter(forum=ad).order_by('-updated_at')
         comment_form = CommentForm()
-        context = { 'forum' : forum, 'comments': comments, 'comment_form': comment_form }
+        context = { 'ad' : ad, 'comments': comments, 'comment_form': comment_form }
         return render(request, self.template_name, context)
 #
 # class AdCreateView(LoginRequiredMixin, View):
@@ -78,7 +73,7 @@ class AdDetailView(AdDetailView):
 #         ad.save()
 #         return redirect(self.success_url)
 
-class AdDeleteView(AdDeleteView):
+class AdDeleteView(OwnerDeleteView):
     model = Ad
     template_name = "ad_delete.html"
 
@@ -133,11 +128,54 @@ class CommentCreateView(LoginRequiredMixin, View):
         comment.save()
         return redirect(reverse_lazy('ad_detail', args=[pk]))
 
-class CommentDeleteView(AdDeleteView):
+class CommentDeleteView(OwnerDeleteView):
     model = Comment
     template_name = "comment_delete.html"
 
     # https://stackoverflow.com/questions/26290415/deleteview-with-a-dynamic-success-url-dependent-on-id
     def get_success_url(self):
         forum = self.object.forum
-        return reverse_lazy('ad_detail', args=[ad.id])
+        return reverse_lazy('ad_detail', args=[forum.id])
+
+class AdListView(AdListView):
+    model = Ad
+    template_name = "ad_list.html"
+
+    def get(self, request) :
+        ad_list = Ad.objects.all()
+        favorites = list()
+        if request.user.is_authenticated:
+            # rows = [{'id': 2}]  (A list of rows)
+            rows = request.user.favorite_ads.values('id')
+            favorites = [ row['id'] for row in rows ]
+        ctx = {'ad_list' : ad_list, 'favorites': favorites}
+        return render(request, self.template_name, ctx)
+
+# https://stackoverflow.com/questions/16458166/how-to-disable-djangos-csrf-validation
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.db.utils import IntegrityError
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AddFavoriteView(LoginRequiredMixin, View):
+    def post(self, request, pk) :
+        print("Add PK",pk)
+        t = get_object_or_404(Ad, id=pk)
+        fav = Fav(user=request.user, ad=t)
+        try:
+            fav.save()  # In case of duplicate key
+        except IntegrityError as e:
+            pass
+        return HttpResponse()
+
+@method_decorator(csrf_exempt, name='dispatch')
+class DeleteFavoriteView(LoginRequiredMixin, View):
+    def post(self, request, pk) :
+        print("Delete PK",pk)
+        t = get_object_or_404(Ad, id=pk)
+        try:
+            fav = Fav.objects.get(user=request.user, ad=t).delete()
+        except Fav.DoesNotExist as e:
+            pass
+
+        return HttpResponse()

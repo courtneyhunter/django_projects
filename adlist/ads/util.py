@@ -2,17 +2,17 @@ from django.views.generic import CreateView, UpdateView, DeleteView, ListView, D
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-class AdListView(ListView):
+class OwnerListView(ListView):
     """
     Sub-class the ListView to pass the request to the form.
     """
 
-class AdDetailView(DetailView):
+class OwnerDetailView(DetailView):
     """
     Sub-class the DetailView to pass the request to the form.
     """
 
-class AdCreateView(LoginRequiredMixin, CreateView):
+class OwnerCreateView(LoginRequiredMixin, CreateView):
     """
     Sub-class of the CreateView to automatically pass the Request to the Form
     and add the owner to the saved object.
@@ -23,9 +23,9 @@ class AdCreateView(LoginRequiredMixin, CreateView):
         object = form.save(commit=False)
         object.ads = self.request.user
         object.save()
-        return super(AdCreateView, self).form_valid(form)
+        return super(OwnerCreateView, self).form_valid(form)
 
-class AdUpdateView(LoginRequiredMixin, UpdateView):
+class OwnerUpdateView(LoginRequiredMixin, UpdateView):
     """
     Sub-class the UpdateView to pass the request to the form and limit the
     queryset to the requesting user.
@@ -34,10 +34,10 @@ class AdUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         print('update get_queryset called')
         """ Limit a User to only modifying their own data. """
-        qs = super(AdUpdateView, self).get_queryset()
+        qs = super(OwnerUpdateView, self).get_queryset()
         return qs.filter(ads=self.request.user)
 
-class AdDeleteView(LoginRequiredMixin, DeleteView):
+class OwnerDeleteView(LoginRequiredMixin, DeleteView):
     """
     Sub-class the DeleteView to restrict a User from deleting other
     user's data.
@@ -45,7 +45,7 @@ class AdDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         print('delete get_queryset called')
-        qs = super(AdDeleteView, self).get_queryset()
+        qs = super(OwnerDeleteView, self).get_queryset()
         return qs.filter(ads=self.request.user)
 
 # References

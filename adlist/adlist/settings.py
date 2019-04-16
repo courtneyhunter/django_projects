@@ -41,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Extentions - see requirements.txt
+    'django_extensions',
     'crispy_forms',
     'rest_framework',
     'social_django',
     'home.apps.HomeConfig',
     'ads.apps.AdsConfig',
+    'autos.apps.AutosConfig',
 ]
 
 # When we get to crispy forms :)
