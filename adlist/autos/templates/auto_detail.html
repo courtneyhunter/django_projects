@@ -4,7 +4,7 @@
 {% block content %}
 <span style="float: right;">
 ({{ auto.updated_at|naturaltime }})
-{% if auto.autos == user %}
+{% if auto.owner == user %}
 <a href="{% url 'auto_update' auto.id %}"><i class="fa fa-pencil"></i></a>
 <a href="{% url 'auto_delete' auto.id %}"><i class="fa fa-trash"></i></a>
 {% endif %}
@@ -30,7 +30,7 @@
 {% for comment in comments %}
 <p> {{ comment.text }}
 ({{ comment.updated_at|naturaltime }})
-{% if user == comment.autos %}
+{% if user == comment.owner %}
 <a href="{% url 'auto_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
 {% endif %}
 </p>

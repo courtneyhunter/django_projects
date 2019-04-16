@@ -71,6 +71,14 @@ class AutoFormView(LoginRequiredMixin, View):
 
 
 class CommentCreateView(LoginRequiredMixin, View):
+    template = 'auto_form.html'
+    success_url = reverse_lazy('autos')
+
+    def get(self, request, pk=None):
+        form = CreateForm()
+        ctx = {'form': form}
+        return render(request, self.template, ctx)
+        
     def post(self, request, pk) :
         f = get_object_or_404(Auto, id=pk)
         comment_form = CommentForm(request.POST)
