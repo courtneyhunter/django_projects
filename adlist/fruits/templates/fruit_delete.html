@@ -1,0 +1,11 @@
+{% extends "fruit_base_menu.html" %}
+{% block content %}
+<h1>Delete Fruit</h1>
+
+<p>Are you sure you want to delete the fruit: {{ fruit }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Yes, delete.">
+</form>
+{% endblock %}

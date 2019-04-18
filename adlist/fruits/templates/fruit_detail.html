@@ -1,0 +1,38 @@
+{% extends "fruit_base_menu.html" %}
+{% load crispy_forms_tags %}
+{% load humanize %} <!-- https://docs.djangoproject.com/en/2.1/ref/contrib/humanize -->
+{% block content %}
+<span style="float: right;">
+({{ fruit.updated_at|naturaltime }})
+{% if fruit.owner == user %}
+<a href="{% url 'fruit_update' fruit.id %}"><i class="fa fa-pencil"></i></a>
+<a href="{% url 'fruit_delete' fruit.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</span>
+<h1>{{ fruit.name }}</h1>
+{% if fruit.content_type %}
+<img style="float:right; max-width:50%;" src="{% url 'fruit_picture' fruit.id %}">
+{% endif %}
+<p>
+{{ fruit.text }}
+</p>
+{% if user.is_authenticated %}
+<br clear="all"/>
+<p>
+<form method="post" action="{% url 'fruit_comment_create' fruit.id %}">
+    {% csrf_token %}
+    {{ comment_form|crispy }}
+<input type="submit" value="Submit">
+<input type="submit" value="All Fruits" onclick="window.location.href='{% url 'fruits' %}';return false;">
+</form>
+{% endif %}
+</p>
+{% for comment in comments %}
+<p> {{ comment.text }}
+({{ comment.updated_at|naturaltime }})
+{% if user == comment.owner %}
+<a href="{% url 'fruit_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</p>
+{% endfor %}
+{% endblock %}
